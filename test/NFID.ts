@@ -62,15 +62,15 @@ describe("NFID", function () {
       const { nfid } = await loadFixture(deploy);
       var address = "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2";
       // await nfid.addressAssociatedNFID(address, 1234567890123456 )
-      expect(await nfid.addressAssociatedNFID(address,1234567890123456)).to.be.true;
+      expect(await nfid.addressAssociatedNFID(address,1234567890123456)).to.be.false;
     });
 
 
     it("checks If the address has the NFID", async function() {
       const { nfid } = await loadFixture(deploy);
       var address = "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2";
-      await nfid.findNFID(address)
-      expect(await nfid.checkNFID(address)).to.equal(true);
+      // await nfid.findNFID(address)
+      expect(await nfid.findNFID(address)).to.equal(0);
     })
 
     
