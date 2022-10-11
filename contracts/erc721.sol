@@ -1114,7 +1114,7 @@ contract MyToken is ERC721, ERC721Burnable, Ownable{
      function approve(address miner_pubkey, uint256 miner_nfid, uint256 new_nfid, address new_pubkey, uint8 role) public virtual  {
         _approve(miner_pubkey, miner_nfid, new_nfid, new_pubkey, role);
     }
-
+//mint signature 
     function _safeMint(address miner_pubkey) public onlyOwner virtual  {
         _mint(miner_pubkey);
     }
@@ -1125,7 +1125,7 @@ contract MyToken is ERC721, ERC721Burnable, Ownable{
         }
         if(checkNFID(mint_request[miner_pubkey].new_pubkey)) {
             revert AddressHasAlreadyNFID(); 
-        }
+     }
         if(_exists(mint_request[miner_pubkey].new_nfid)) {
             revert NFIDAlreadyExists();
         }
@@ -1152,7 +1152,7 @@ contract MyToken is ERC721, ERC721Burnable, Ownable{
         mint_request[miner_pubkey].role = 0;
     }
 
-
+//burn signature 
  function _burn(address from, uint256 nfid) internal onlyOwner virtual {
         burn(from, nfid);
     }     
