@@ -1110,7 +1110,7 @@ contract MyToken is ERC721, ERC721Burnable, Ownable{
         mint_request[miner_pubkey].new_pubkey = new_pubkey;
         mint_request[miner_pubkey].role = role;
     }
-
+//approve signature 
      function approve(address miner_pubkey, uint256 miner_nfid, uint256 new_nfid, address new_pubkey, uint8 role) public virtual  {
         _approve(miner_pubkey, miner_nfid, new_nfid, new_pubkey, role);
     }
