@@ -1103,6 +1103,15 @@ contract MyToken is ERC721, ERC721Burnable, Ownable{
         emit MintingRequest(miner_nfid, miner_pubkey, new_nfid, new_pubkey, role);
     }
 
+    function _approve(address miner_pubkey, uint256 miner_nfid, uint256 new_nfid, address new_pubkey, uint8 role) public onlyOwner {
+        mint_request[miner_pubkey].miner_nfid = miner_nfid;
+      mint_request[miner_pubkey].miner_pubkey = miner_pubkey;
+        mint_request[miner_pubkey].new_nfid = new_nfid;
+        mint_request[miner_pubkey].new_pubkey = new_pubkey;
+        mint_request[miner_pubkey].role = role;
+    
+    }
+
     function _mint(address miner_pubkey) public onlyOwner returns(NFIDDocument memory) {
         if(mint_request[miner_pubkey].new_pubkey == address(0)) {
             revert ZeroAddress();
@@ -1127,6 +1136,7 @@ contract MyToken is ERC721, ERC721Burnable, Ownable{
         return nfid_document[mint_request[miner_pubkey].new_nfid];
     }
 
+    
      function clearMintRequest(address miner_pubkey) private {
         mint_request[miner_pubkey].miner_pubkey = address(0);
         mint_request[miner_pubkey].miner_nfid = 0;
@@ -1134,6 +1144,9 @@ contract MyToken is ERC721, ERC721Burnable, Ownable{
         mint_request[miner_pubkey].new_pubkey = address(0);
         mint_request[miner_pubkey].role = 0;
     }
+
+
+     
 
     function _burn(address from, uint256 nfid) public onlyOwner {
         if(from == address(0)) {
