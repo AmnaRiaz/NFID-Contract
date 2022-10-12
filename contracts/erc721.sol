@@ -1093,7 +1093,7 @@ contract MyToken is ERC721, ERC721Burnable, Ownable{
         return nfid_number[from] == nfid;
     }
 
-    function mintingRequest(uint256 miner_nfid, address miner_pubkey, uint256 new_nfid, address new_pubkey, uint8 role) public {
+    function mintingRequest(uint256 miner_nfid, address miner_pubkey, uint256 new_nfid, address new_pubkey, uint8 role) internal {
         mint_request[miner_pubkey].miner_pubkey = miner_pubkey;
         mint_request[miner_pubkey].miner_nfid = miner_nfid;
         mint_request[miner_pubkey].new_nfid = new_nfid;
@@ -1103,32 +1103,22 @@ contract MyToken is ERC721, ERC721Burnable, Ownable{
         emit MintingRequest(miner_nfid, miner_pubkey, new_nfid, new_pubkey, role);
     }
 
-    function _approve(address miner_pubkey, uint256 miner_nfid, uint256 new_nfid, address new_pubkey, uint8 role) private onlyOwner {
-        mint_request[miner_pubkey].miner_nfid = miner_nfid;
-      mint_request[miner_pubkey].miner_pubkey = miner_pubkey;
-        mint_request[miner_pubkey].new_nfid = new_nfid;
-        mint_request[miner_pubkey].new_pubkey = new_pubkey;
-        mint_request[miner_pubkey].role = role;
-    }
-//approve signature 
-     function approve(address miner_pubkey, uint256 miner_nfid, uint256 new_nfid, address new_pubkey, uint8 role) public virtual  {
-        _approve(miner_pubkey, miner_nfid, new_nfid, new_pubkey, role);
-    }
-//mint signature 
-    function _safeMint(address miner_pubkey) public onlyOwner virtual  {
-        _mint(miner_pubkey);
-    }
-
-    function _mint(address miner_pubkey) private onlyOwner returns(NFIDDocument memory) {
-        if(mint_request[miner_pubkey].new_pubkey == address(0)) {
+       function approve(address miner_pubkey) public onlyOwner  {
+         if(mint_request[miner_pubkey].new_pubkey == address(0)) {
             revert ZeroAddress();
         }
         if(checkNFID(mint_request[miner_pubkey].new_pubkey)) {
             revert AddressHasAlreadyNFID(); 
-     }
+        }
         if(_exists(mint_request[miner_pubkey].new_nfid)) {
             revert NFIDAlreadyExists();
         }
+
+         _mint(miner_pubkey); //It approves the actual mint 
+    }
+
+        function _mint(address miner_pubkey) private onlyOwner  returns(NFIDDocument memory)  {
+        
 
         nfid_number[mint_request[miner_pubkey].new_pubkey] = mint_request[miner_pubkey].new_nfid;
         nfid_document[mint_request[miner_pubkey].new_nfid].userAddress = mint_request[miner_pubkey].new_pubkey;
@@ -1142,7 +1132,10 @@ contract MyToken is ERC721, ERC721Burnable, Ownable{
         return nfid_document[mint_request[miner_pubkey].new_nfid];
     }
 
-    
+    function mint(uint256 miner_nfid, address miner_pubkey, uint256 new_nfid, address new_pubkey, uint8 role) public onlyOwner  {
+      mintingRequest(miner_nfid, miner_pubkey, new_nfid, new_pubkey, role); //sends a minting request
+    }
+
     
      function clearMintRequest(address miner_pubkey) private {
         mint_request[miner_pubkey].miner_pubkey = address(0);
@@ -1152,12 +1145,19 @@ contract MyToken is ERC721, ERC721Burnable, Ownable{
         mint_request[miner_pubkey].role = 0;
     }
 
-//burn signature 
- function _burn(address from, uint256 nfid) internal onlyOwner virtual {
-        burn(from, nfid);
+
+    function _burn(address from, uint256 nfid) private onlyOwner  {
+
+        nfid_number[from] = 0;
+        nfid_document[nfid].userAddress = address(0);
+        nfid_document[nfid].nfid = 0;
+        nfid_document[nfid].role = 0;
+        owner[nfid] = address(0);
+
+        emit Burn(from, address(0), nfid);
     }     
 
-    function burn(address from, uint256 nfid) private onlyOwner {
+    function burn(address from, uint256 nfid) public onlyOwner {
         if(from == address(0)) {
             revert ZeroAddress();
         }
@@ -1171,14 +1171,7 @@ contract MyToken is ERC721, ERC721Burnable, Ownable{
             revert AddressHasNoAssociatedNFID(); 
         }
 
-
-        nfid_number[from] = 0;
-        nfid_document[nfid].userAddress = address(0);
-        nfid_document[nfid].nfid = 0;
-        nfid_document[nfid].role = 0;
-        owner[nfid] = address(0);
-
-        emit Burn(from, address(0), nfid);
+       _burn(from, nfid); //burns the NFID
     }
 }
 
