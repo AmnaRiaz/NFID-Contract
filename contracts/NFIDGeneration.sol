@@ -57,3 +57,5 @@ contract GenNFID {
         return result;
     }
 }
+
+//generates 16 digit nfid 
