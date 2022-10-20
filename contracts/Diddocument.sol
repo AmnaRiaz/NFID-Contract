@@ -173,5 +173,8 @@ contract NewDID {
     function getDoc(address key) public view  returns(string memory class, AuthDetail[] memory, CapInvo[] memory, CapDeleg[] memory, AssertMethod[] memory, KeyAgree[] memory, ServiceEndpoint[] memory){
         return(did_document[key].class, did_document[key].authentication, did_document[key].capabilityInvocation, did_document[key].capabilityDelegation,  did_document[key].assertionMethod, did_document[key].keyAgreement, did_document[key].serviceEndpoint);
     }
+//doesn't work struct in function
+
+
 
 }
